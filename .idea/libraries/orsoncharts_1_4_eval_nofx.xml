@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="orsoncharts-1.4-eval-nofx">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/orsoncharts-1.4-eval-nofx.jar!/" />
+      <root url="jar://$PROJECT_DIR$/orsonpdf-1.6-eval.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

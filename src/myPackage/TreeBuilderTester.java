@@ -19,12 +19,10 @@ public class TreeBuilderTester {
 
     Tree tree;
 
-    BufferedWriter br;
 
-    public TreeBuilderTester(DataSet trainDataSet, DataSet testDataSet, BufferedWriter br) {
+    public TreeBuilderTester(DataSet trainDataSet, DataSet testDataSet) {
         this.trainDataSet = trainDataSet;
         this.testDataSet = testDataSet;
-        this.br = br;
     }
 
     public void buildNaiveBayes() {
@@ -73,12 +71,12 @@ public class TreeBuilderTester {
             });
 
             // Output.
-            br.write(attribute.name);
-            for (Attribute aParent : parent) br.write(" " + aParent.name);
-            br.newLine();
+            System.out.print(attribute.name);
+            for (Attribute aParent : parent) System.out.print(" " + aParent.name);
+            System.out.println();
 
         }
-        br.newLine();
+        System.out.println();
     }
 
     private void buildMST() {
@@ -169,17 +167,16 @@ public class TreeBuilderTester {
             }
 
             // Output.
-            br.write(resString + " " + record.get(testDataSet.classLabel) + " ");
-            br.write(Double.toString(res));
-            br.newLine();
+            System.out.print(resString + " " + record.get(testDataSet.classLabel) + " ");
+            System.out.print(Double.toString(res));
+            System.out.println();
 
             if(record.get(testDataSet.classLabel).equals(resString)) correct++;
         }
 
-        br.newLine();
-        br.write(Integer.toString(correct));
-        br.newLine();
-        br.close();
+        System.out.println();
+        System.out.print(Integer.toString(correct));
+        System.out.println();
     }
 
     public double subsetTrain(int size, String type) {

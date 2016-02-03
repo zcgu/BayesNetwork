@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.jfree.ui.RefineryUtilities;
+
 public class BayesMain {
 
 	static String type;
@@ -11,8 +13,6 @@ public class BayesMain {
 	static DataSet trainDataSet;
 	static DataSet testDataSet;
 	
-	static String outPath = "out.txt";
-
 	public static void main(String[] args) throws IOException {
 		// Get parameters.
 		type = args[2];
@@ -24,12 +24,8 @@ public class BayesMain {
 		trainDataSet = dataSetLoader.getTrainData();
 		testDataSet = dataSetLoader.getTestData();
 
-		// Open output file.
-		File outFile = new File(outPath);
-		BufferedWriter br = new BufferedWriter(new FileWriter(outFile));
-
 		// Build tree.
-		TreeBuilderTester treeBuilderTester = new TreeBuilderTester(trainDataSet, testDataSet, br);
+		TreeBuilderTester treeBuilderTester = new TreeBuilderTester(trainDataSet, testDataSet);
 		if(type.equals("n")) {
 			treeBuilderTester.buildNaiveBayes();
 		} else if (type.equals("t")) {
@@ -49,11 +45,26 @@ public class BayesMain {
 		res2 /= 4;
 		res3 /= 4;
 
-		// Draw.
+		/**********************************************************************************
+		 *
+		 * Draw the learning curve.
+		 * To get the plot, uncomment following line.
+		 *
+		 *********************************************************************************/
+		//draw(type, res1, res2, res3);
 
-
-		// Finish.
-		br.close();
 	}
 
+	private static void draw(String type, double d1, double d2, double d3) {
+		// Draw.
+		String title = null;
+		if (type.equals("n")) title = "Naive Bayes";
+		else if (type.equals("t")) title = "TAN";
+
+		Plot chart = new Plot("Learning Curve", title, d1, d2, d3);
+		chart.pack( );
+		RefineryUtilities.centerFrameOnScreen(chart);
+		chart.setVisible(true);
+
+	}
 }
