@@ -1,7 +1,8 @@
 package myPackage;
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.StringTokenizer;
+import myPackage.TreeStructure.Line;
 
 public class DataSet {
 
@@ -10,7 +11,7 @@ public class DataSet {
 	
 	// All attributes.
 	public ArrayList<Attribute> attributeList;
-	
+
 	// Class( The last attribute)
 	public Attribute classLabel;
 	
@@ -92,29 +93,82 @@ public class DataSet {
 				attribute2.possibleValues.size() * attribute3.possibleValues.size());
 		
 	}
-	public double pyX(String yString, Map<Attribute, String> Xrecord) {
+	public double pyXn(String yString, Map<Attribute, String> Xrecord) {
 		
 		// numerator.
-		double numerator = pv(classLabel, yString) * pXy(Xrecord, yString);
+		double numerator = pv(classLabel, yString) * pXyn(Xrecord, yString);
 	
 		// denominator.
 		double denominator = 0;
 		for(String s : classLabel.possibleValues) {
-			double a = pv(classLabel, s) * pXy(Xrecord, s);
+			double a = pv(classLabel, s) * pXyn(Xrecord, s);
 			denominator += a;
 		}
 		
 		return numerator / denominator;
 	}
 
-	public double pXy(Map<Attribute, String> Xrecord, String yString) {
+	private double pXyn(Map<Attribute, String> Xrecord, String yString) {
 		double res = 1;
 		for(Attribute attribute : attributeList) {
 			res *= pvlv(attribute, Xrecord.get(attribute), classLabel, yString);
 		}
 		return res;
 	}
-	
+
+	public double pyXt(String yString, Map<Attribute, String> Xrecord, TreeStructure treeStructure) {
+		// numerator.
+		double numerator = pv(classLabel, yString) * pXyt(Xrecord, yString, treeStructure);
+
+		// denominator.
+		double denominator = 0;
+		for(String s : classLabel.possibleValues) {
+			double a = pv(classLabel, s) * pXyt(Xrecord, s, treeStructure);
+			denominator += a;
+		}
+
+		return numerator / denominator;
+	}
+
+	private double pXyt(Map<Attribute, String> Xrecord, String yString, TreeStructure treeStructure) {
+		double res = 1;
+
+		for(Attribute attribute : attributeList) {
+			ArrayList<Attribute > parentList = new ArrayList<>();
+			ArrayList<String > stringList = new ArrayList<>();
+
+			for(Line line : treeStructure.lines) {
+				if(line.endPoint.equals(attribute)) {
+					parentList.add(line.startPoint);
+					if(line.startPoint.equals(classLabel)) stringList.add(yString);
+					else stringList.add(Xrecord.get(line.startPoint));
+				}
+			}
+
+			res *= pxlvvv(attribute, Xrecord.get(attribute), parentList, stringList);
+		}
+
+		return res;
+	}
+
+	private double pxlvvv(Attribute x, String s, ArrayList<Attribute > list, ArrayList<String > slist) {
+
+		double num = 0;
+		double total = 0;
+
+		for(Map<Attribute, String > map : data) {
+			// Not match condition.
+			boolean flag = false;
+			for(int i = 0; i < list.size(); i++) if(!map.get(list.get(i)).equals(slist.get(i))) flag = true;
+			if(flag) continue;
+
+			total += 1;
+			if(map.get(x).equals(s)) num += 1;
+		}
+
+		return (num + 1) / (total + x.possibleValues.size());
+	}
+
 	public double iXXY(Attribute X1, Attribute X2) {
 		double res = 0;
 		
@@ -148,15 +202,15 @@ public class DataSet {
 		
 		public double get(Attribute attribute, String string) {
 			for(int i=0; i<values.size(); i++) {
-				if(attributes1.get(i).equals(attribute) && strings1.equals(string)) return (double) values.get(i);
+				if(attributes1.get(i).equals(attribute) && strings1.get(i).equals(string)) return values.get(i);
 			}
 			return -1;
 		}
 		
 		public double get(Attribute attribute1, String string1, Attribute attribute2, String string2) {
 			for(int i=0; i<values.size(); i++) {
-				if(attributes1.get(i).equals(attribute1) && strings1.equals(string1)
-						&& attributes2.get(i).equals(attribute2) && strings2.equals(string2)) return (double) values.get(i);
+				if(attributes1.get(i).equals(attribute1) && strings1.get(i).equals(string1)
+						&& attributes2.get(i).equals(attribute2) && strings2.get(i).equals(string2)) return values.get(i);
 			}
 			return -1;
 		}
@@ -166,7 +220,7 @@ public class DataSet {
 			strings1.add(string);
 			attributes2.add(new Attribute());
 			strings2.add("");
-			values.add(new Double(value));
+			values.add(value);
 		}
 	
 		public void put(Attribute attribute1, String string1, Attribute attribute2, String string2, double value) {
@@ -174,7 +228,7 @@ public class DataSet {
 			strings1.add(string1);
 			attributes2.add(attribute2);
 			strings2.add(string2);
-			values.add(new Double(value));
+			values.add(value);
 		}
 		
 	}

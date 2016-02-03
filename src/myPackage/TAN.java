@@ -69,7 +69,7 @@ public class TAN {
 			
 			// Output.
 			br.write(attribute.name);
-			for(int j=0; j<parent.size(); j++) br.write(" " + parent.get(j).name);
+			for (Attribute aParent : parent) br.write(" " + aParent.name);
 			br.newLine();
 			
 		}
@@ -85,9 +85,17 @@ public class TAN {
 			// Find the max
 			double res = -1;
 			String resString = "";
-			//TODO : test.
-			
-			
+
+			for(String yString : testDataSet.classLabel.possibleValues) {
+				double tmpRes = trainDataSet.pyXt(yString, record, treeStructure);
+
+				if(tmpRes > res) {
+					res = tmpRes;
+					resString = yString;
+				}
+			}
+
+
 			// Output.
 			br.write(resString + " " + record.get(testDataSet.classLabel) + " " + Double.toString(res));
 			br.newLine();

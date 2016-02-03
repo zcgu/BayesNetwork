@@ -1,10 +1,7 @@
 package myPackage;
 
-import java.beans.beancontext.BeanContext;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -60,7 +57,7 @@ public class NaiveBayes {
 			double res = -1;
 			String resString = "";
 			for(String yString : testDataSet.classLabel.possibleValues) {
-				double tmpRes = trainDataSet.pyX(yString, record);
+				double tmpRes = trainDataSet.pyXn(yString, record);
 				
 				if(tmpRes > res) {
 					res = tmpRes;
@@ -70,7 +67,7 @@ public class NaiveBayes {
 			
 			// Output.
 			br.write(resString + " " + record.get(testDataSet.classLabel) + " ");
-			br.write(Double.toString(trainDataSet.pyX(resString, record)));
+			br.write(Double.toString(trainDataSet.pyXn(resString, record)));
 			br.newLine();
 			
 			if(record.get(testDataSet.classLabel).equals(resString)) correct++;
