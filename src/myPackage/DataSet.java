@@ -1,8 +1,9 @@
 package myPackage;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-import myPackage.TreeStructure.Line;
+
+import myPackage.Tree.Line;
 
 public class DataSet {
 
@@ -18,140 +19,57 @@ public class DataSet {
 	// The data.
 	public ArrayList<Map<Attribute, String> > data;
 	
-	// tmp cache.
-//	private PList pList;
-	
 	public DataSet() {
 		relation = null;
 		attributeList = new ArrayList<>();
 		classLabel = null;
 		data = new ArrayList<>();
-//		pList = new PList();
-	}
-	
-	private double pv(Attribute attribute, String string) {
-//		if(pList.get(attribute, string) > -0.5) return pList.get(attribute, string);
-		
-		// Calculate.
-		double num = 0;
-		for(Map<Attribute, String> map : data) {
-			if(map.get(attribute).equals(string)) num += 1;
-		}
-		
-//		pList.put(attribute, string, num / data.size());
-		return (num + 1) / (data.size() + attribute.possibleValues.size());
-	}
-	
-	private double pvlv(Attribute attribute1, String string1, Attribute attribute2, String string2) {
-//		if(pList.get(attribute1, string1, attribute2, string2) > -0.5)
-//			return pList.get(attribute1, string1, attribute2, string2);
-		
-		// Calculate.
-		double num = 0;
-		double total = 0;
-		for(Map<Attribute, String> map : data) {
-			if(map.get(attribute2).equals(string2)){
-				total += 1;
-				if(map.get(attribute1).equals(string1)) num += 1;
-			}
-		}
-		
-//		pList.put(attribute1, string1, attribute2, string2, num / total);
-		return (num + 1) / (total+ attribute1.possibleValues.size());
-		
-	}
-	
-	private double pvvlv(Attribute attribute1, String string1, Attribute attribute2, String string2, 
-			Attribute attribute3, String string3) {
-		
-		// Calculate.
-		double num = 0;
-		double total = 0;
-		for(Map<Attribute, String> map : data) {
-			if(map.get(attribute3).equals(string3)){
-				total += 1;
-				if(map.get(attribute1).equals(string1) && map.get(attribute2).equals(string2)) num += 1;
-			}
-		}
-		
-		return (num + 1) / (total + attribute1.possibleValues.size() * attribute2.possibleValues.size());
-	}
-	
-	private double pvvv(Attribute attribute1, String string1, Attribute attribute2, String string2, 
-			Attribute attribute3, String string3) {
-		
-		// Calculate.
-		double num = 0;
-		for(Map<Attribute, String> map : data) {
-			if(map.get(attribute1).equals(string1) && map.get(attribute2).equals(string2)
-					&& map.get(attribute3).equals(string3)){
-				num += 1;
-			}
-		}
-		
-		return (num + 1) / (data.size() + attribute1.possibleValues.size() * 
-				attribute2.possibleValues.size() * attribute3.possibleValues.size());
-		
-	}
-	public double pyXn(String yString, Map<Attribute, String> Xrecord) {
-		
-		// numerator.
-		double numerator = pv(classLabel, yString) * pXyn(Xrecord, yString);
-	
-		// denominator.
-		double denominator = 0;
-		for(String s : classLabel.possibleValues) {
-			double a = pv(classLabel, s) * pXyn(Xrecord, s);
-			denominator += a;
-		}
-		
-		return numerator / denominator;
 	}
 
-	private double pXyn(Map<Attribute, String> Xrecord, String yString) {
-		double res = 1;
-		for(Attribute attribute : attributeList) {
-			res *= pvlv(attribute, Xrecord.get(attribute), classLabel, yString);
-		}
-		return res;
-	}
+	public static class Attribute {
 
-	public double pyXt(String yString, Map<Attribute, String> Xrecord, TreeStructure treeStructure) {
-		// numerator.
-		double numerator = pv(classLabel, yString) * pXyt(Xrecord, yString, treeStructure);
+		public String name;
 
-		// denominator.
-		double denominator = 0;
-		for(String s : classLabel.possibleValues) {
-			double a = pv(classLabel, s) * pXyt(Xrecord, s, treeStructure);
-			denominator += a;
+		public ArrayList<String> possibleValues;
+
+		public Attribute() {
+			name = null;
+			possibleValues = new ArrayList<>();
 		}
 
-		return numerator / denominator;
-	}
-
-	private double pXyt(Map<Attribute, String> Xrecord, String yString, TreeStructure treeStructure) {
-		double res = 1;
-
-		for(Attribute attribute : attributeList) {
-			ArrayList<Attribute > parentList = new ArrayList<>();
-			ArrayList<String > stringList = new ArrayList<>();
-
-			for(Line line : treeStructure.lines) {
-				if(line.endPoint.equals(attribute)) {
-					parentList.add(line.startPoint);
-					if(line.startPoint.equals(classLabel)) stringList.add(yString);
-					else stringList.add(Xrecord.get(line.startPoint));
-				}
-			}
-
-			res *= pxlvvv(attribute, Xrecord.get(attribute), parentList, stringList);
+		@Override
+		public int hashCode() {
+			return name.length();
 		}
 
-		return res;
+		@Override
+		public boolean equals(Object object) {
+			if(!(object instanceof Attribute)) return false;
+
+			Attribute attribute = (Attribute) object;
+			return this.name.equals(attribute.name);
+		}
 	}
 
-	private double pxlvvv(Attribute x, String s, ArrayList<Attribute > list, ArrayList<String > slist) {
+	public static class AttributeValuePair {
+		public Attribute attribute;
+		public String value;
+
+		AttributeValuePair(Attribute attribute, String value) {
+			this.attribute = attribute;
+			this.value = value;
+		}
+	}
+
+	/**
+	 * This function is use to calculate condition probability.
+	 * Every probability (including non-condition probability) is calculate by this function.
+	 *
+	 * @param list1 : the variables and corresponding values on the left.
+	 * @param list2 : the variables and corresponding values on the right.
+     * @return : calculate result.
+     */
+	public double pCondition(List<AttributeValuePair> list1, List<AttributeValuePair> list2) {
 
 		double num = 0;
 		double total = 0;
@@ -159,25 +77,111 @@ public class DataSet {
 		for(Map<Attribute, String > map : data) {
 			// Not match condition.
 			boolean flag = false;
-			for(int i = 0; i < list.size(); i++) if(!map.get(list.get(i)).equals(slist.get(i))) flag = true;
+			for(AttributeValuePair pair : list2) if(!map.get(pair.attribute).equals(pair.value)) flag = true;
 			if(flag) continue;
 
 			total += 1;
-			if(map.get(x).equals(s)) num += 1;
+
+			flag = false;
+			for(AttributeValuePair pair : list1) if(!map.get(pair.attribute).equals(pair.value)) flag = true;
+			if(flag) continue;
+
+			num += 1;
 		}
 
-		return (num + 1) / (total + x.possibleValues.size());
+		double add = 1;
+		for (AttributeValuePair pair : list1) add *= pair.attribute.possibleValues.size();
+		return (num + 1) / (total + add);
 	}
 
-	public double iXXY(Attribute X1, Attribute X2) {
+	private double p(Attribute attribute, String value) {
+
+		ArrayList<AttributeValuePair> list1 = new ArrayList<>();
+		ArrayList<AttributeValuePair> list2 = new ArrayList<>();
+		list1.add(new AttributeValuePair(attribute, value));
+
+		return pCondition(list1, list2);
+	}
+
+	private double p(Attribute attribute1, String value1, Attribute attribute2, String value2,
+					 Attribute attribute3, String value3) {
+
+		ArrayList<AttributeValuePair> list1 = new ArrayList<>();
+		ArrayList<AttributeValuePair> list2 = new ArrayList<>();
+		list1.add(new AttributeValuePair(attribute1, value1));
+		list1.add(new AttributeValuePair(attribute2, value2));
+		list1.add(new AttributeValuePair(attribute3, value3));
+
+		return pCondition(list1, list2);
+
+	}
+
+	private double pCondition(Attribute attribute1, String value1, Attribute attribute2, String value2) {
+
+		ArrayList<AttributeValuePair> list1 = new ArrayList<>();
+		ArrayList<AttributeValuePair> list2 = new ArrayList<>();
+		list1.add(new AttributeValuePair(attribute1, value1));
+		list2.add(new AttributeValuePair(attribute2, value2));
+
+		return pCondition(list1, list2);
+	}
+
+	public double pyX(String yString, Map<Attribute, String> Xrecord, Tree tree) {
+		// numerator.
+		double numerator = p(classLabel, yString) * pXy(Xrecord, yString, tree);
+
+		// denominator.
+		double denominator = 0;
+		for(String s : classLabel.possibleValues) {
+			double a = p(classLabel, s) * pXy(Xrecord, s, tree);
+			denominator += a;
+		}
+
+		return numerator / denominator;
+	}
+
+	private double pXy(Map<Attribute, String> Xrecord, String yString, Tree tree) {
+		double res = 1;
+
+		for(Attribute attribute : attributeList) {
+
+			ArrayList<AttributeValuePair> list1 = new ArrayList<>();
+			list1.add(new AttributeValuePair(attribute, Xrecord.get(attribute)));
+
+			ArrayList<AttributeValuePair> list2 = new ArrayList<>();
+			for(Line line : tree.lines) {
+				if(line.endPoint.equals(attribute)) {
+					AttributeValuePair pair;
+
+					if(line.startPoint.equals(classLabel)) pair = new AttributeValuePair(line.startPoint, yString);
+					else pair = new AttributeValuePair(line.startPoint, Xrecord.get(line.startPoint));
+
+					list2.add(pair);
+				}
+			}
+
+			res *= pCondition(list1, list2);
+		}
+
+		return res;
+	}
+
+
+	public double i(Attribute X1, Attribute X2) {
 		double res = 0;
 		
 		for (String s1 : X1.possibleValues){
 			for(String s2 : X2.possibleValues){
 				for(String sy : classLabel.possibleValues) {
-					res += pvvv(X1, s1, X2, s2, classLabel, sy) 
-							* Math.log( pvvlv(X1, s1, X2, s2, classLabel, sy) / 
-									(pvlv(X1, s1, classLabel, sy) * pvlv(X2, s2, classLabel, sy)) )
+					ArrayList<AttributeValuePair> list1 = new ArrayList<>();
+					ArrayList<AttributeValuePair> list2 = new ArrayList<>();
+					list1.add(new AttributeValuePair(X1, s1));
+					list1.add(new AttributeValuePair(X2, s2));
+					list2.add(new AttributeValuePair(classLabel, sy));
+
+					res += p(X1, s1, X2, s2, classLabel, sy)
+							* Math.log( pCondition(list1, list2) /
+									(pCondition(X1, s1, classLabel, sy) * pCondition(X2, s2, classLabel, sy)) )
 							/ Math.log(2);
 				}
 			}
@@ -185,51 +189,5 @@ public class DataSet {
 		
 		return res;
 	}
-	private class PList {
-		ArrayList<Attribute> attributes1;
-		ArrayList<String> strings1;
-		ArrayList<Attribute> attributes2;
-		ArrayList<String> strings2;
-		ArrayList<Double> values;
-		
-		public PList() {
-			attributes1 = new ArrayList<>();
-			attributes2 = new ArrayList<>();
-			strings1 = new ArrayList<>();
-			strings2 = new ArrayList<>();
-			values = new ArrayList<>();
-		}		
-		
-		public double get(Attribute attribute, String string) {
-			for(int i=0; i<values.size(); i++) {
-				if(attributes1.get(i).equals(attribute) && strings1.get(i).equals(string)) return values.get(i);
-			}
-			return -1;
-		}
-		
-		public double get(Attribute attribute1, String string1, Attribute attribute2, String string2) {
-			for(int i=0; i<values.size(); i++) {
-				if(attributes1.get(i).equals(attribute1) && strings1.get(i).equals(string1)
-						&& attributes2.get(i).equals(attribute2) && strings2.get(i).equals(string2)) return values.get(i);
-			}
-			return -1;
-		}
-		
-		public void put(Attribute attribute, String string, double value) {
-			attributes1.add(attribute);
-			strings1.add(string);
-			attributes2.add(new Attribute());
-			strings2.add("");
-			values.add(value);
-		}
-	
-		public void put(Attribute attribute1, String string1, Attribute attribute2, String string2, double value) {
-			attributes1.add(attribute1);
-			strings1.add(string1);
-			attributes2.add(attribute2);
-			strings2.add(string2);
-			values.add(value);
-		}
-		
-	}
+
 }

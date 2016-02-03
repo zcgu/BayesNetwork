@@ -1,28 +1,25 @@
 package myPackage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.text.StyledEditorKit.ForegroundAction;
+import myPackage.DataSet.Attribute;
 
-public class LoadArff {
+public class DataSetLoader {
+
+	private DataSet trainDataSet;
+	private DataSet testDataSet;
 	
-	BufferedReader trainBR;
-	BufferedReader testBR;
-	
-	DataSet trainDataSet;
-	DataSet testDataSet;
-	
-	public LoadArff(String trainPath, String testPath) throws IOException {
+	public DataSetLoader(String trainPath, String testPath) throws IOException {
 		// Set Readers.
 		File trainFile = new File(trainPath);
 		File testFile = new File(testPath);
-		trainBR = new BufferedReader(new FileReader(trainFile));
-		testBR = new BufferedReader(new FileReader(testFile));
+		BufferedReader trainBR = new BufferedReader(new FileReader(trainFile));
+		BufferedReader testBR = new BufferedReader(new FileReader(testFile));
 
 		// Init data.
 		trainDataSet = new DataSet();
@@ -95,13 +92,11 @@ public class LoadArff {
 	
 	private void handleRelationLine(DataSet dataSet, String line) {
 		String[] splitLine = line.split(" ");
-		
-		for(int i=0; i<splitLine.length; i++) {
-			String s = splitLine[i];
-			
-			if(s.length() <= 0) continue;
-			if(s.equalsIgnoreCase("@Relation") || s.equals(" ")) continue;
-			
+
+		for (String s : splitLine) {
+			if (s.length() <= 0) continue;
+			if (s.equalsIgnoreCase("@Relation") || s.equals(" ")) continue;
+
 			dataSet.relation = s;
 			return;
 		}
@@ -109,29 +104,27 @@ public class LoadArff {
 	
 	private void handleAttributeLine(DataSet dataSet, String line) {
 		String[] splitLine = line.split(" ");
-		
-		for(int i=0; i<splitLine.length; i++) {
-			String s = splitLine[i];
-			
-			if(s.length() <= 0) continue;
-			if(s.equalsIgnoreCase("@Attribute") || s.equals(" ")) continue;
+
+		for (String s : splitLine) {
+			if (s.length() <= 0) continue;
+			if (s.equalsIgnoreCase("@Attribute") || s.equals(" ")) continue;
 
 			// Get the name part.
 			Attribute attribute = new Attribute();
 			attribute.name = s;
-			
+
 			// Get the value part.
 			handleAttirbutePossibleValues(attribute, line);
-			
+
 			// Remove "'" in name.
-			if(attribute.name.startsWith("'") && attribute.name.endsWith("'")) {
-				attribute.name = attribute.name.substring(1, attribute.name.length()-1);
+			if (attribute.name.startsWith("'") && attribute.name.endsWith("'")) {
+				attribute.name = attribute.name.substring(1, attribute.name.length() - 1);
 			}
-			
+
 			// Add attribute to dataset.
-			if(attribute.name.equalsIgnoreCase("class")) dataSet.classLabel = attribute;
+			if (attribute.name.equalsIgnoreCase("class")) dataSet.classLabel = attribute;
 			else dataSet.attributeList.add(attribute);
-			
+
 			return;
 		}
 	}
@@ -151,7 +144,7 @@ public class LoadArff {
 		
 		// Add values to attribute.
 		String[] splitValueString = valuesString.split(",");
-		for(String s : splitValueString) attribute.possibleValues.add(s);
+		Collections.addAll(attribute.possibleValues, splitValueString);
 	}
 	
 	private void handleDataLine(DataSet dataSet, String line) {
@@ -160,7 +153,7 @@ public class LoadArff {
 		
 		// Split and add to data set.
 		String[] splitLine = line.split(",");
-		Map<Attribute, String> map = new HashMap<Attribute, String>();
+		Map<Attribute, String> map = new HashMap<>();
 
 		for(int i=0; i<splitLine.length; i++) {
 			

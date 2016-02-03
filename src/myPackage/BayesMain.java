@@ -1,9 +1,6 @@
 package myPackage;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -15,31 +12,48 @@ public class BayesMain {
 	static DataSet testDataSet;
 	
 	static String outPath = "out.txt";
-	
+
 	public static void main(String[] args) throws IOException {
 		// Get parameters.
 		type = args[2];
 
 		// Load arff files.
-		LoadArff loadArff = new LoadArff(args[0], args[1]);
+		DataSetLoader dataSetLoader = new DataSetLoader(args[0], args[1]);
 		
 		// Get data sets.
-		trainDataSet = loadArff.getTrainData();
-		testDataSet = loadArff.getTestData();
-		
-		// Build Naive Bayes.
+		trainDataSet = dataSetLoader.getTrainData();
+		testDataSet = dataSetLoader.getTestData();
+
+		// Open output file.
+		File outFile = new File(outPath);
+		BufferedWriter br = new BufferedWriter(new FileWriter(outFile));
+
+		// Build tree.
+		TreeBuilderTester treeBuilderTester = new TreeBuilderTester(trainDataSet, testDataSet, br);
 		if(type.equals("n")) {
-			NaiveBayes naiveBayes = new NaiveBayes(trainDataSet, testDataSet, outPath);
-			naiveBayes.setNaiveBayesStructure();
-			naiveBayes.test();
+			treeBuilderTester.buildNaiveBayes();
 		} else if (type.equals("t")) {
-			TAN tan = new TAN(trainDataSet, testDataSet, outPath);
-			tan.setTANStructure();
-			tan.test();
+			treeBuilderTester.buildTAN();
 		}
-		
+		treeBuilderTester.outputModel();
+		treeBuilderTester.test();
+
+		// Graph part.
+		double res1 = 0, res2 = 0, res3 = 0;
+		for(int i = 0; i < 4; i++) {
+			res1 += treeBuilderTester.subsetTrain(25, type);
+			res2 += treeBuilderTester.subsetTrain(50, type);
+			res3 += treeBuilderTester.subsetTrain(100, type);
+		}
+		res1 /= 4;
+		res2 /= 4;
+		res3 /= 4;
+
+		// Draw.
+
+
 		// Finish.
-		System.out.println("done");
+		br.close();
 	}
 
 }
