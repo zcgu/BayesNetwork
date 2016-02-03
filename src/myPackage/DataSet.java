@@ -5,6 +5,10 @@ import java.util.Map;
 
 import myPackage.Tree.Line;
 
+/**
+ * This class store the data set.
+ *
+ */
 public class DataSet {
 
 	// Relation Name.
@@ -26,6 +30,10 @@ public class DataSet {
 		data = new ArrayList<>();
 	}
 
+	/**
+	 * Attribute class contains attribute name and possible values.
+	 *
+	 */
 	public static class Attribute {
 
 		public String name;
@@ -51,6 +59,9 @@ public class DataSet {
 		}
 	}
 
+	/**
+	 * This class is used to pass the attribute and its value.
+	 */
 	public static class AttributeValuePair {
 		public Attribute attribute;
 		public String value;
@@ -94,6 +105,12 @@ public class DataSet {
 		return (num + 1) / (total + add);
 	}
 
+	/**
+	 * Convient function for p(X = x).
+	 * @param attribute : X.
+	 * @param value : x.
+     * @return : result.
+     */
 	private double p(Attribute attribute, String value) {
 
 		ArrayList<AttributeValuePair> list1 = new ArrayList<>();
@@ -103,6 +120,16 @@ public class DataSet {
 		return pCondition(list1, list2);
 	}
 
+	/**
+	 * Convient function for p(X1 = x1, X2 = x2, X3 = x3).
+	 * @param attribute1 : X1.
+	 * @param value1 : x1.
+	 * @param attribute2 : X2.
+	 * @param value2 : x2.
+	 * @param attribute3 : X3.
+     * @param value3 : x3.
+     * @return : result.
+     */
 	private double p(Attribute attribute1, String value1, Attribute attribute2, String value2,
 					 Attribute attribute3, String value3) {
 
@@ -116,6 +143,14 @@ public class DataSet {
 
 	}
 
+	/**
+	 * Convient function for p(X1 = x1 | X2 = x2).
+	 * @param attribute1 : X1.
+	 * @param value1 : x1.
+	 * @param attribute2 : X2.
+	 * @param value2 : x2.
+     * @return : result.
+     */
 	private double pCondition(Attribute attribute1, String value1, Attribute attribute2, String value2) {
 
 		ArrayList<AttributeValuePair> list1 = new ArrayList<>();
@@ -126,6 +161,13 @@ public class DataSet {
 		return pCondition(list1, list2);
 	}
 
+	/**
+	 * Calculate P(Y = y | x^)
+	 * @param yString : y.
+	 * @param Xrecord : x^ values.
+	 * @param tree : tree.
+     * @return : result.
+     */
 	public double pyX(String yString, Map<Attribute, String> Xrecord, Tree tree) {
 		// numerator.
 		double numerator = p(classLabel, yString) * pXy(Xrecord, yString, tree);
@@ -140,6 +182,13 @@ public class DataSet {
 		return numerator / denominator;
 	}
 
+	/**
+	 * Calculate P( x^ | Y = y )
+	 * @param Xrecord : x^ values.
+	 * @param yString : y.
+	 * @param tree : tree.
+     * @return : result.
+     */
 	private double pXy(Map<Attribute, String> Xrecord, String yString, Tree tree) {
 		double res = 1;
 
@@ -167,6 +216,12 @@ public class DataSet {
 	}
 
 
+	/**
+	 * Calculate I(X1, X2 | Y)
+	 * @param X1 : X1.
+	 * @param X2 : X2.
+     * @return : result.
+     */
 	public double i(Attribute X1, Attribute X2) {
 		double res = 0;
 		

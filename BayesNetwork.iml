@@ -11,5 +11,6 @@
     <orderEntry type="library" name="jcommon-1.0.23" level="project" />
     <orderEntry type="library" name="orsoncharts-1.4-eval-nofx" level="project" />
     <orderEntry type="library" name="servlet" level="project" />
+    <orderEntry type="library" name="weka" level="project" />
   </component>
 </module>

@@ -1,11 +1,11 @@
 package myPackage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jfree.ui.RefineryUtilities;
 
+/**
+ * This is the main class of this project.
+ */
 public class BayesMain {
 
 	static String type;
@@ -55,6 +55,14 @@ public class BayesMain {
 
 	}
 
+	/**
+	 * This function will draw curve.
+	 *
+	 * @param type : n or t.
+	 * @param d1 : accuracy for 25.
+	 * @param d2 : accuracy for 50.
+     * @param d3 : accuracy for 100.
+     */
 	private static void draw(String type, double d1, double d2, double d3) {
 		// Draw.
 		String title = null;

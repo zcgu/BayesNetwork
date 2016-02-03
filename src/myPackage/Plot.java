@@ -15,6 +15,9 @@ import org.jfree.ui.ApplicationFrame;
 
 import java.awt.*;
 
+/**
+ * Plot the result.
+ */
 public class Plot extends ApplicationFrame {
     public Plot(String applicationTitle, String chartTitle, double d1, double d2, double d3) {
         super(applicationTitle);

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import myPackage.DataSet.Attribute;
 
+/**
+ * This class represent model.
+ *
+ */
 public class Tree {
 	
 	public ArrayList<UnDirectionLine > unDirectionLines;
@@ -14,7 +18,11 @@ public class Tree {
 		unDirectionLines = new ArrayList<>();
 		lines = new ArrayList<>();
 	}
-	
+
+	/**
+	 * This is the edge with direction.
+	 *
+	 */
 	static public class Line {
 		
 		public Attribute startPoint;
@@ -25,7 +33,11 @@ public class Tree {
 			this.startPoint = startPoint;
 		}
 	}
-	
+
+	/**
+	 * Edge without direction.
+	 *
+	 */
 	static public class UnDirectionLine {
 		
 		public Attribute point1;
@@ -39,11 +51,15 @@ public class Tree {
 		}
 	}
 
-	public static class UnDirectionLineComparetor implements Comparator<UnDirectionLine> {
+	/**
+	 * Comparator for line without direction.
+	 *
+	 */
+	public static class UnDirectionLineComparator implements Comparator<UnDirectionLine> {
 
 		DataSet trainDataSet;
 
-		public UnDirectionLineComparetor(DataSet trainDataSet) {
+		public UnDirectionLineComparator(DataSet trainDataSet) {
 			this.trainDataSet = trainDataSet;
 		}
 

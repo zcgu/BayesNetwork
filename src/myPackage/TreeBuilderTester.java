@@ -1,7 +1,5 @@
 package myPackage;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,8 +8,12 @@ import java.util.Map;
 import myPackage.Tree.Line;
 import myPackage.Tree.UnDirectionLine;
 import myPackage.DataSet.Attribute;
-import myPackage.Tree.UnDirectionLineComparetor;
+import myPackage.Tree.UnDirectionLineComparator;
 
+/**
+ * This class build the structure and do the test.
+ *
+ */
 public class TreeBuilderTester {
     DataSet trainDataSet;
 
@@ -25,6 +27,10 @@ public class TreeBuilderTester {
         this.testDataSet = testDataSet;
     }
 
+    /**
+     * Build naive bayes tree.
+     *
+     */
     public void buildNaiveBayes() {
         tree = new Tree();
 
@@ -35,7 +41,11 @@ public class TreeBuilderTester {
         }
     }
 
-    public void buildTAN() throws IOException {
+    /**
+     * Build TAN tree.
+     *
+     */
+    public void buildTAN() {
         tree = new Tree();
 
         // build tree
@@ -47,7 +57,10 @@ public class TreeBuilderTester {
         }
     }
 
-    public void outputModel() throws IOException {
+    /**
+     * Output model to console.
+     */
+    public void outputModel() {
         // Output.
         for(int i=0; i<trainDataSet.attributeList.size(); i++) {
             Attribute attribute = trainDataSet.attributeList.get(i);
@@ -79,6 +92,10 @@ public class TreeBuilderTester {
         System.out.println();
     }
 
+    /**
+     * Build MST in TAN for X1, X2 ... Xn.
+     *
+     */
     private void buildMST() {
         ArrayList<Attribute> vnew = new ArrayList<>();
         ArrayList<Attribute> v = trainDataSet.attributeList;
@@ -97,7 +114,7 @@ public class TreeBuilderTester {
                 e.add(line);
             }
         }
-        Collections.sort(e, new UnDirectionLineComparetor(trainDataSet));
+        Collections.sort(e, new UnDirectionLineComparator(trainDataSet));
 
         // Loop
         while(vnew.size() < trainDataSet.attributeList.size()) {
@@ -119,6 +136,10 @@ public class TreeBuilderTester {
         tree.unDirectionLines = enew;
     }
 
+    /**
+     * Assign directions for TAN structure.
+     *
+     */
     private void assignDirections() {
         Attribute root = trainDataSet.attributeList.get(0);
 
@@ -148,7 +169,10 @@ public class TreeBuilderTester {
         }
     }
 
-    public void test() throws IOException {
+    /**
+     * test the model with test set.
+     */
+    public void test() {
         int correct = 0;
 
         for(int i=0; i<testDataSet.data.size(); i++) {
@@ -179,6 +203,12 @@ public class TreeBuilderTester {
         System.out.println();
     }
 
+    /**
+     * Get n size subset training set.
+     * @param size : n.
+     * @param type : n or t.
+     * @return : test result.
+     */
     public double subsetTrain(int size, String type) {
         ArrayList<Map<Attribute, String> > wholeData = trainDataSet.data;
 
@@ -193,6 +223,10 @@ public class TreeBuilderTester {
         return res;
     }
 
+    /**
+     * Test the accuracy with subset train samples.
+     * @return result.
+     */
     private double testAccuracy() {
         double correct = 0;
         double total = 0;
