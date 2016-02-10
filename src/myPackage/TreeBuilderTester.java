@@ -192,7 +192,7 @@ public class TreeBuilderTester {
 
             // Output.
             System.out.print(resString + " " + record.get(testDataSet.classLabel) + " ");
-            System.out.print(Double.toString(res));
+            System.out.print(Double.toString( round(res, 12) ));
             System.out.println();
 
             if(record.get(testDataSet.classLabel).equals(resString)) correct++;
@@ -201,6 +201,21 @@ public class TreeBuilderTester {
         System.out.println();
         System.out.print(Integer.toString(correct));
         System.out.println();
+    }
+
+    /**
+     * round up.
+     * @param value : the double to round.
+     * @param places : number behind.
+     * @return : result.
+     */
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 
     /**
