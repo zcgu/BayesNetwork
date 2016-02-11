@@ -2,6 +2,7 @@ package myPackage;
 import java.io.IOException;
 
 import org.jfree.ui.RefineryUtilities;
+import weka.core.Instances;
 
 /**
  * This is the main class of this project.
@@ -17,12 +18,10 @@ public class BayesMain {
 		// Get parameters.
 		type = args[2];
 
-		// Load arff files.
-		DataSetLoader dataSetLoader = new DataSetLoader(args[0], args[1]);
-		
-		// Get data sets.
-		trainDataSet = dataSetLoader.getTrainData();
-		testDataSet = dataSetLoader.getTestData();
+		// Load
+		DataSetLoaderWithWeka dataSetLoaderWithWeka = new DataSetLoaderWithWeka(args[0], args[1]);
+		trainDataSet = dataSetLoaderWithWeka.getTrainData();
+		testDataSet = dataSetLoaderWithWeka.getTestData();
 
 		// Build tree.
 		TreeBuilderTester treeBuilderTester = new TreeBuilderTester(trainDataSet, testDataSet);
